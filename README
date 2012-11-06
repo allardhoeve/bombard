@@ -1,0 +1,24 @@
+Siege Support Utilities
+-----------------------
+
+Author: Bill Proud <bill.proud@nl.wanadoo.com>
+Partly based on Peter Hutnick's bombardment
+
+The siege support utilities consist of the following perl scripts all of which
+should be installed in the same directory (such as /usr/local/bin):
+
+prepdata	Processes the siege log outputting a file usable by siegechart
+siegechart	Creates a set of charts in PNG format
+bombard		Drives siege along with the other two scripts above
+
+Notes:
+
+1. Siegechart requires the following perl modules: Chart-2.x and GD-1.2x
+2. Bombard requires a logfile entry to be set in .siegerc
+
+There are also the following man pages which can be installed in for example
+/usr/local/man/man1:
+
+siegechart.1
+bombard.1
+

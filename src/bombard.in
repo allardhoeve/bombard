@@ -1,0 +1,109 @@
+%_PERL%
+#
+# bombard
+# Author: Bill Proud <bill.proud@nl.wanadoo.com>
+#
+
+use POSIX;
+use Getopt::Std;
+use File::Basename;
+use FindBin;
+use strict;
+use vars qw($opt_d $opt_f $opt_v $opt_h $opt_H $opt_i $opt_l $opt_r $opt_s $opt_t);
+
+my $bdir = $FindBin::Bin;
+
+getopts "d:f:H:hvi:l:r:s:t:";
+
+my $delay   = $opt_d ? $opt_d : 15;
+my $sites   = $opt_f;
+my $inc     = $opt_i;
+my $rund    = $opt_l;
+my $runs    = $opt_r ? $opt_r : 10;
+my $start   = $opt_s;
+my $length  = $opt_t ? $opt_t : 5;
+my $header  = $opt_H ? "-H \"$opt_H\"" : "";
+my $version = "bombard-%_VERSION% [build %_DATE%]\n";
+my $siege   = "%_SIEGE%";
+
+my $usage = 
+"Usage: bombard [options]
+Options:
+  -d <delay>      Default 15	Max delay between connections (secs)
+  -f <URL file>	  Required	URLs to test
+  -h              Optional      This output
+  -i <increment>  Required	Additional simulated users per run
+  -l <run dir>    Optional      Used to store results
+  -r <runs>       Default 10 
+  -s <start>      Required	Number of simulated users for first run
+  -t <time>       Default 5	Duration of each run (mins)
+  -v              Version  
+  -H header       Optional      Pass an optional header to siege
+
+If the run directory isn't specified .siegerc is read for a logfile entry and
+that directory will be used.  If there is no logfile entry in .siegerc the
+current directory is used\n";
+
+if( $opt_v ){ print $version; exit; }
+if( $opt_h ){ print $usage; exit; }
+die $usage unless $sites and $start and $inc;
+
+my $logf;
+my $rc = $ENV{HOME} . "/.siegerc";
+open RC, $rc or die "Can't open .siegerc: $!\n";
+while (<RC>) {
+	if (/^logfile = /) {
+		chomp;
+		$logf = (split)[2];
+		last;
+	}
+}
+die "Sorry, I need the logfile to be set in .siegerc\n" unless $logf;
+
+# If the run directory isn't specified on the command line get it from 
+# the rc file
+$rund = dirname $logf unless $rund;
+
+if (-d $rund) {
+  chdir $rund or die "Can't cd to $rund: $!\n";
+} else {
+  die "The run directory must already exist\n";
+}
+
+rename "$logf", "$logf.old" or die "Can't rename the log file: $!\n" if -f "$logf";
+die "The URL file is not readable: $!\n" unless -r $sites;
+
+my $clients = $start;
+my $i;
+for ($i = 1; $runs >= $i; $i++) {
+  system("$siege $header -f $sites -c $clients -t $length -d $delay -i");
+  $clients += $inc;
+}
+
+my $date = POSIX::strftime "%y%m%d", localtime;
+mkdir("$date", 0755) unless -d "$date";
+
+my $time = POSIX::strftime "%H%M", localtime;
+open LOG1, $logf;
+open LOG2, ">$date/$time";
+while (<LOG1>) {
+	print LOG2;
+}
+close LOG2;
+
+open INFO, ">$date/$time.info";
+open SITE, $sites;
+print INFO "Start: $start\tIncrement: $inc\tRuns: $runs\tDelay: $delay\n";
+while (<SITE>) {
+	print INFO;
+}
+close INFO;
+
+chdir $date;
+print "Generating graphs...\n";
+system "$bdir/prepdata $time $start $inc";
+system "$bdir/siegechart -f $time.resp.png -y 'Response Time' $time.resp";
+system "$bdir/siegechart -f $time.tps.png -y TPS $time.tps";
+system "$bdir/siegechart -f $time.bps.png -y BPS $time.bps";
+system "$bdir/siegechart -f $time.conc.png -y Connections $time.conc";
+

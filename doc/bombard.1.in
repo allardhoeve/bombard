@@ -1,0 +1,83 @@
+.TH BOMBARD 1 "%_DATE%"
+.SH NAME
+bombard v%_VERSION% - drive siege and create charts from the results
+.SH SYNOPSIS
+bombard -f\ file -s\ start -i\ increment [-l\ rundir] [-r\ runs] [-t\ time]
+[-d\ delay]
+.PP
+bombard -h
+.SH DESCRIPTION
+This utility calls siege repeatedly each time with a greater number of
+simulated users.  When it is finished it creates a set of charts in PNG format
+showing the results.
+.PP
+The PNG files are written to a sub-directory of the run directory called 
+<yymmdd> and consist of:
+.PP
+.nf
+<hhmm>.bps.png      Throughput
+<hhmm>.conc.png     Concurrency
+<hhmm>.resp.png     Response Time
+<hhmm>.tps.png      Transaction Rate
+.fi
+.PP
+In addition to the above files this directory will contain the data files used
+to produce them (same names but without the png extentions).  Also there
+will be a copy of the  siege.log called <hhmm> and another file called
+<hhmm>.info which gives information on the bombard session.
+.PP
+Note that bombard needs to have a logfile entry in .siegerc
+.SH OPTIONS
+.TP
+-d delay
+Max random delay in seconds between connections by a simulated user.  See the
+siege documentation for more details but you can probably just leave this at 
+the default setting of 15.
+.TP
+-f file
+The file listing the URLs to be tested.  See the siege documentation for the 
+format of this file but basically for GETs its just a list of URLs.  Can be 
+either absolute or relative to the directory with the siege log.
+.TP
+-h
+Display usage and then exit.
+.TP
+-i increment
+Increment by which the number of simulated users is increased for each run of 
+siege.
+.TP
+-l rundir
+The directory which will be used to hold the results of the stress test.
+The default is to read .siegerc for a logfile entry and use the same
+directory.
+.TP
+-r runs
+The number of siege runs to do.  Defaults to 10.
+.TP
+-s start
+Number of simulated users for first run.
+.TP
+-t time
+.TP
+-v
+Display version and then exit
+Duration of each run (mins).  Defaults to 5.
+.SH EXAMPLES
+A basic example using the defaults might look like:
+.IP
+bombard -f testpages -s 10 -i 10
+.IP
+This would pull URLs from the file called testpages running siege 10 times
+starting with 10 simulated users and building up to 100.
+.IP
+Another example this time using all of the options might look like:
+.IP
+bombard -f testpages -s 10 -i 10 -d 30 -l /tmp -r 20 -t 10
+.IP
+This is as the previous example except that the delay has been increased to 30
+seconds, the tests will build up to 200 simulated users, each run will last
+10 minutes and the results will be written in /tmp.
+.SH AUTHOR
+Bill Proud <bill.proud@nl.wanadoo.com>
+.SH SEE ALSO
+siegechart(1)

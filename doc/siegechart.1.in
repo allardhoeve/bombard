@@ -1,0 +1,51 @@
+.TH SIEGECHART v%_VERSION% 1 "%_DATE%"
+.SH NAME
+siegechart - create PNG format charts from bombard results
+.SH SYNOPSIS
+siegechart -y\ label [-f\ file] [-m\ max] [-s\ names] datafile
+.PP
+siegechart -h
+.SH DESCRIPTION
+Normally siegechart is run from bombard but there are occasions when it is
+useful to run it directly.  It takes as input the datafile which must have the 
+following format:
+.PP
+First Line: Space separated list of labels for the X-axis
+Other Lines: Space separated list of values
+.SH OPTIONS
+.TP
+-f file
+The name of the PNG file to output.  Defaults to out.png.
+.TP
+-h
+Display usage and then exit.
+.TP
+-m max
+Maximum value for the chart.  Normally you don't need this option but it can
+sometimes be useful particularly in the case of very small values.
+.TP
+-s names
+A comma separated list of labels to use for the sets of data.  Specify the
+labels in the same order as the lists of values appear in the datafile.
+.TP
+-y label
+The label to use on the Y-axis.
+.SH EXAMPLE
+With a datafile looking like:
+.PP
+.nf
+100 200 300 400 500 600 700 800 900 1000
+0.01 0.01 0.02 0.02 0.03 0.04 0.06 0.09 0.16 0.27 
+0.00 0.00 0.00 0.01 0.01 0.01 0.01 0.01 0.01 0.01 
+0.10 0.10 0.10 0.10 0.10 0.10 0.10 0.11 0.11 0.11 
+0.00 0.00 0.01 0.01 0.01 0.01 0.01 0.01 0.01 0.02 
+.fi
+.PP
+You could use:
+.PP
+siegechart -f results.png -y "Response Time" -m 0.3 -s "Set 1, Set 2, Set 3, Set 4" datafile
+.SH AUTHOR
+Bill Proud <bill.proud@nl.wanadoo.com>
+.SH SEE ALSO
+bombard(1)
+

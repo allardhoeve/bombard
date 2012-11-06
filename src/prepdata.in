@@ -1,0 +1,49 @@
+%_PERL%
+#
+# prepdata
+# Author: Bill Proud <bill.proud@nl.wanadoo.com>
+#
+
+$file = shift;
+$start = shift;
+$inc = shift;
+
+unless ($inc) {
+	print "Usage: prepdata <log file> <start> <interval>\n";
+	exit;
+}
+
+open IN, $file or die "Can't open $file: $!\n";
+
+open RESP, ">$file.resp" or die "Can't write $file.resp: $!\n";
+open TPS, ">$file.tps" or die "Can't write $file.tps: $!\n";
+open BPS, ">$file.bps" or die "Can't write $file.bps: $!\n";
+open CONC, ">$file.conc" or die "Can't write $file.conc: $!\n";
+
+$n = $start;
+while (<IN>) {
+	next if /Date/;
+	chomp;
+	s/,\s*/,/g;
+	($resp, $tps, $bps, $conc) = (split /,/)[4,5,6,7];
+
+	$labels .= "$n ";
+	$n += $inc;
+
+	$outr .= "$resp ";
+	$outt .= "$tps ";
+	$outb .= "$bps ";
+	$outc .= "$conc ";
+}
+
+print RESP "$labels\n";
+print RESP "$outr\n";
+
+print TPS "$labels\n";
+print TPS "$outt\n";
+
+print BPS "$labels\n";
+print BPS "$outb\n";
+
+print CONC "$labels\n";
+print CONC "$outc\n";

@@ -1,0 +1,11 @@
+
+
+2003/03/25 Bill Proud <bill.proud@nl.wanadoo.com> 
+ *--BOMBARD 1.00 RELEASE--* RELEASE_1-00_MAR-25-2003 
+
+2003/03/24 Jeffrey Fulmer <http://www.joedog.org/contact/author.shtml> 
+ * src/siegechart.in        added print statement to show filenames
+
+2003/03/21 Jeffrey Fulmer <http://www.joedog.org/contact/author.shtml>
+ * distribution             added autotools support
+

@@ -1,0 +1,79 @@
+dnl REQUIRE AUTOCONF 2.50 OR HIGHER...
+AC_PREREQ(2.50)
+ 
+dnl
+dnl Process this file with autoconf to produce a configure script.
+dnl
+AC_INIT
+AC_CONFIG_SRCDIR([src/version.h])
+AM_CONFIG_HEADER(config.h) 
+
+dnl
+dnl Define the utils directory
+dnl
+AC_CONFIG_AUX_DIR(utils) 
+ 
+VERSION=`sed -e 's/^.*"\(.*\)";$/\1/' src/version.h`
+AC_SUBST(VERSION)
+AM_INIT_AUTOMAKE(bombard, $VERSION)
+DATE=`${CONFIG_SHELL} ${srcdir}/utils/mkstamp`
+AC_SUBST(DATE) 
+
+AC_PATH_PROG( PERL, perl, false ) 
+AC_SUBST(PERL)
+
+SIEGE="false"
+AC_ARG_WITH(siege,dnl
+[  --with-siege=ARG        where ARG is the full path to the siege binary ],
+[  SIEGE="$withval"                                                         ])
+AC_SUBST(SIEGE)
+
+if test ${SIEGE} = "false"
+then
+  AC_PATH_PROG( SIEGE, siege, false ) 
+  AC_SUBST(SIEGE)
+fi
+
+need_gd=1
+AC_MSG_CHECKING(perl module GD)
+CHECK=`${CONFIG_SHELL} ${srcdir}/utils/check.sh ${PERL} "GD"`
+if test "$CHECK" != "0"; then
+  AC_MSG_RESULT(no)
+  need_gd=1
+else
+  AC_MSG_RESULT(ok)
+  need_gd=0
+fi  
+
+need_chart_lines=1
+AC_MSG_CHECKING(perl module Chart::Lines)
+CHECK=`${CONFIG_SHELL} ${srcdir}/utils/check.sh ${PERL} "Chart::Lines"`
+if test "$CHECK" != "0"; then
+  AC_MSG_RESULT(no)  
+  need_chart_lines=1
+else
+  AC_MSG_RESULT(ok)
+  need_chart_lines=0
+fi 
+
+AC_OUTPUT(Makefile doc/Makefile src/Makefile utils/Makefile)
+
+if test "$need_gd" != 0; then
+  echo "FAILED REQUISITE: GD-1.2x "
+  echo "  You can find this module here on CPAN:"
+  echo "  http://www.cpan.org/authors/id/L/LD/LDS"
+fi
+if test "$need_chart_lines" != 0; then
+  echo "FAILED REQUISITE: Chart::Lines"
+  echo "  You can find this module here on CPAN:"
+  echo "  http://www.cpan.org/authors/id/C/CH/CHARTGRP/"
+fi
+if test ${SIEGE} = "false" 
+then
+  echo "FAILED REQUISITE: siege"
+  echo "  You must have siege installed in order to use this program."
+  echo "  If siege is installed on this computer then make sure that"
+  echo "  it is in your path."
+  echo "  http://www.joedog.org/siege/"
+fi
+

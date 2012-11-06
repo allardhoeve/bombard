@@ -1,0 +1,56 @@
+#!/usr/bin/perl
+#
+# siegechart
+# Author: Bill Proud <bill.proud@nl.wanadoo.com>
+#
+use Getopt::Std;
+use Chart::Lines;
+
+getopts "f:hm:s:y:";
+
+$usage = 
+"Usage: siegechart [options] <data file>
+Options:
+	-f <PNG File>	Defaults to out.png
+	-h		This Output
+	-m <Max Value>
+	-s <Set Names>	Comma Separated list of data sets
+	-y <Y Label>	Required
+\n";
+
+die $usage if $opt_h;
+die $usage unless $opt_y;
+
+$file = $opt_f ? $opt_f : "out.png";
+@labels = map {s/^\s+//; $_} split /,/, $opt_s;
+
+while (<>) {
+	push @data, [split];
+}
+
+$chart = new Chart::Lines;
+
+%opts = (
+	title => "Stress Test",
+	transparent => "true",
+	x_label => "Simulated Users",
+	y_label => $opt_y,
+	grid_lines => "true"
+);
+
+$opts{max_val} = $opt_m if $opt_m;
+if (@labels) {
+	$opts{legend_labels} = \@labels;
+}
+else {
+	$opts{legend} = "none";
+}
+
+$chart->set(%opts);
+
+$chart->png($file, \@data);
+
+my $pwd = `pwd`;
+chomp($pwd);
+print $pwd."/".$file."\n";
+
