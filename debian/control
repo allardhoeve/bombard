@@ -1,0 +1,21 @@
+Source: bombard
+Section: utils
+Priority: optional
+Build-Depends:
+	siege,
+	libgd-gd2-perl,
+	libchart-perl,
+	debhelper (>= 9)
+Maintainer: Allard Hoeve <allardhoeve@gmail.com>
+Standards-Version: 3.9.3
+Vcs-Git: http://github.com/allardhoeve/bombard
+Homepage: http://www.joedog.org/pub/bombard/
+
+Package: bombard
+Architecture: any
+Section: utils
+Depends: ${misc:Depends}, ${shlibs:Depends}, siege, libgd-gd2-perl, libchart-perl
+Description: siege wrapper that runs increasing amounts of load and charts results
+ Bombard runs siege in such a way that it increases the amount of load. It does
+ this by running more and more concurrent users. It then charts the performance
+ numbers for you.
