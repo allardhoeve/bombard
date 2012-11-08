@@ -1,3 +1,10 @@
+bombard (1.01-3) unstable; urgency=low
+
+  * Allow long options (e.g. --help).
+  * Pass multiple -H options to siege.
+
+ -- Allard <allard@intern.byte.nl>  Thu, 08 Nov 2012 11:19:48 +0100
+
 bombard (1.01-2) unstable; urgency=low
 
   * Document -H option in siege.
