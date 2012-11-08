@@ -6,7 +6,7 @@ Build-Depends:
 	libgd-gd2-perl,
 	libchart-perl,
 	debhelper (>= 9)
-Maintainer: Allard Hoeve <allardhoeve@gmail.com>
+Maintainer: Allard Hoeve <allard@byte.nl>
 Standards-Version: 3.9.3
 Vcs-Git: http://github.com/allardhoeve/bombard
 Homepage: http://www.joedog.org/pub/bombard/
