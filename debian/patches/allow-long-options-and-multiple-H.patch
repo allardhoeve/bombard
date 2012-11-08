@@ -1,0 +1,99 @@
+diff --git a/src/bombard.in b/src/bombard.in
+index 9bc6071..1419ac4 100644
+--- a/src/bombard.in
++++ b/src/bombard.in
+@@ -5,15 +5,26 @@
+ #
+ 
+ use POSIX;
+-use Getopt::Std;
++use Getopt::Long;
+ use File::Basename;
+ use FindBin;
+ use strict;
+-use vars qw($opt_d $opt_f $opt_v $opt_h $opt_H $opt_i $opt_l $opt_r $opt_s $opt_t);
++use vars qw($opt_d $opt_f $opt_v $opt_h @opt_H $opt_i $opt_l $opt_r $opt_s $opt_t);
+ 
+ my $bdir = $FindBin::Bin;
+ 
+-getopts "d:f:H:hvi:l:r:s:t:";
++my $result = GetOptions( "d|delay=i" => \$opt_d,
++                         "f|urlfile=s" => \$opt_d,
++			 "h|help" => sub { usage() },
++			 "i|increment=i" => \$opt_i,
++			 "l|rundir=s" => \$opt_l,
++			 "r|runs=i" => \$opt_r,
++			 "s|start=i" => \$opt_s,
++			 "t|time=i" => \$opt_t,
++			 "v|version" => \$opt_v,
++			 "H|header=s" => \@opt_H );
++
++usage() if not $result;
+ 
+ my $delay   = $opt_d ? $opt_d : 15;
+ my $sites   = $opt_f;
+@@ -22,31 +33,57 @@ my $rund    = $opt_l;
+ my $runs    = $opt_r ? $opt_r : 10;
+ my $start   = $opt_s;
+ my $length  = $opt_t ? $opt_t : 5;
+-my $header  = $opt_H ? "-H \"$opt_H\"" : "";
++my $header  = scalar(@opt_H) ? join(" ", map { "-H \"$_\"" } @opt_H) : "";
+ my $version = "bombard-%_VERSION% [build %_DATE%]\n";
+ my $siege   = "%_SIEGE%";
+ 
+-my $usage = 
+-"Usage: bombard [options]
++die $header;
++
++sub usage {
++	my $exitcode = shift || 0;
++	print <<EOM;
++Usage: bombard [options]
+ Options:
+   -d <delay>      Default 15	Max delay between connections (secs)
++  --delay
++
+   -f <URL file>	  Required	URLs to test
++  --urlfile
++
+   -h              Optional      This output
++  --help
++
+   -i <increment>  Required	Additional simulated users per run
++  --increment
++
+   -l <run dir>    Optional      Used to store results
++  --rundir
++
+   -r <runs>       Default 10 
++  --runs
++
+   -s <start>      Required	Number of simulated users for first run
++  --start
++
+   -t <time>       Default 5	Duration of each run (mins)
++  --time
++
+   -v              Version  
++  --version
++
+   -H header       Optional      Pass an optional header to siege
++  --header
+ 
+ If the run directory isn't specified .siegerc is read for a logfile entry and
+-that directory will be used.  If there is no logfile entry in .siegerc the
+-current directory is used\n";
++that directory will be used. If there is no logfile entry in .siegerc the
++current directory is used.
++EOM
++	exit($exitcode);
++}
++
+ 
+ if( $opt_v ){ print $version; exit; }
+-if( $opt_h ){ print $usage; exit; }
+-die $usage unless $sites and $start and $inc;
++usage(1) unless $sites and $start and $inc;
+ 
+ my $logf;
+ my $rc = $ENV{HOME} . "/.siegerc";
