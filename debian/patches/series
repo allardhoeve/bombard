@@ -1,2 +1,3 @@
 allow-long-options-and-multiple-H.patch
 update-autotools-helper-files.patch
+support-long-options-and-min-value-in-siegechart.patch

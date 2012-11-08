@@ -1,0 +1,91 @@
+Index: bombard/src/siegechart.in
+===================================================================
+--- bombard.orig/src/siegechart.in	2012-11-08 16:53:33.000000000 +0100
++++ bombard/src/siegechart.in	2012-11-08 17:01:49.000000000 +0100
+@@ -3,12 +3,23 @@
+ # siegechart
+ # Author: Bill Proud <bill.proud@nl.wanadoo.com>
+ #
+-use Getopt::Std;
++use strict;
++use warnings;
++
++use Getopt::Long;
+ use Chart::Lines;
+ 
+-getopts "f:hm:s:y:";
++my $file = "out.png";
++my $help;
++my $maxvalue;
++my $minvalue;
++my $ylabel;
++my $names;
++
+ 
+-$usage = 
++sub usage {
++	my $exit = shift || 0;
++	warn <<EOM;
+ "Usage: siegechart [options] <data file>
+ Options:
+ 	-f <PNG File>	Defaults to out.png
+@@ -16,29 +27,41 @@
+ 	-m <Max Value>
+ 	-s <Set Names>	Comma Separated list of data sets
+ 	-y <Y Label>	Required
+-\n";
++EOM
++	exit $exit;
++}
+ 
+-die $usage if $opt_h;
+-die $usage unless $opt_y;
++usage() if not GetOptions( "f|outfile=s" => \$file,
++	                   "h|help" => sub { usage() },
++			   "m|max" => \$maxvalue,
++			   "min" => \$minvalue,
++			   "s|names" => \$names,
++			   "y|ylabel" => \$ylabel );
++
++if (not $ylabel) {
++	warn "Please specify ylabel!\n";
++	usage(1);
++}
+ 
+-$file = $opt_f ? $opt_f : "out.png";
+-@labels = map {s/^\s+//; $_} split /,/, $opt_s;
++my @labels = map {s/^\s+//; $_} split /,/, $names;
++my @data;
+ 
+ while (<>) {
+ 	push @data, [split];
+ }
+ 
+-$chart = new Chart::Lines;
+-
+-%opts = (
++my $chart = new Chart::Lines;
++my %opts = (
+ 	title => "Stress Test",
+ 	transparent => "true",
+ 	x_label => "Simulated Users",
+-	y_label => $opt_y,
++	y_label => $ylabel,
+ 	grid_lines => "true"
+ );
+ 
+-$opts{max_val} = $opt_m if $opt_m;
++$opts{max_val} = $maxvalue if defined $maxvalue;
++$opts{min_val} = $minvalue if defined $minvalue;
++
+ if (@labels) {
+ 	$opts{legend_labels} = \@labels;
+ }
+@@ -47,7 +70,6 @@
+ }
+ 
+ $chart->set(%opts);
+-
+ $chart->png($file, \@data);
+ 
+ my $pwd = `pwd`;
