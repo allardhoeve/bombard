@@ -1,7 +1,7 @@
-diff --git a/src/bombard.in b/src/bombard.in
-index 9bc6071..1419ac4 100644
---- a/src/bombard.in
-+++ b/src/bombard.in
+Index: bombard/src/bombard.in
+===================================================================
+--- bombard.orig/src/bombard.in	2012-11-08 12:03:55.000000000 +0100
++++ bombard/src/bombard.in	2012-11-08 12:04:28.000000000 +0100
 @@ -5,15 +5,26 @@
  #
  
@@ -18,7 +18,7 @@ index 9bc6071..1419ac4 100644
  
 -getopts "d:f:H:hvi:l:r:s:t:";
 +my $result = GetOptions( "d|delay=i" => \$opt_d,
-+                         "f|urlfile=s" => \$opt_d,
++                         "f|urlfile=s" => \$opt_f,
 +			 "h|help" => sub { usage() },
 +			 "i|increment=i" => \$opt_i,
 +			 "l|rundir=s" => \$opt_l,
@@ -32,7 +32,7 @@ index 9bc6071..1419ac4 100644
  
  my $delay   = $opt_d ? $opt_d : 15;
  my $sites   = $opt_f;
-@@ -22,31 +33,57 @@ my $rund    = $opt_l;
+@@ -22,31 +33,58 @@
  my $runs    = $opt_r ? $opt_r : 10;
  my $start   = $opt_s;
  my $length  = $opt_t ? $opt_t : 5;
@@ -43,8 +43,6 @@ index 9bc6071..1419ac4 100644
  
 -my $usage = 
 -"Usage: bombard [options]
-+die $header;
-+
 +sub usage {
 +	my $exitcode = shift || 0;
 +	print <<EOM;
@@ -93,7 +91,90 @@ index 9bc6071..1419ac4 100644
  if( $opt_v ){ print $version; exit; }
 -if( $opt_h ){ print $usage; exit; }
 -die $usage unless $sites and $start and $inc;
-+usage(1) unless $sites and $start and $inc;
++unless ($sites and $start and $inc) {
++	print "Please specify --urlfile, --start and --increment\n\n";
++	usage(1);
++}
  
  my $logf;
  my $rc = $ENV{HOME} . "/.siegerc";
+Index: bombard/doc/bombard.1.in
+===================================================================
+--- bombard.orig/doc/bombard.1.in	2012-11-08 12:03:55.000000000 +0100
++++ bombard/doc/bombard.1.in	2012-11-08 12:03:56.000000000 +0100
+@@ -2,8 +2,8 @@
+ .SH NAME
+ bombard v%_VERSION% - drive siege and create charts from the results
+ .SH SYNOPSIS
+-bombard -f\ file -s\ start -i\ increment [-l\ rundir] [-r\ runs] [-t\ time]
+-[-d\ delay]
++bombard -f\ file -s\ start -i\ increment [-l\ rundir] [-r\ runs] [-t\ time] [-d\ delay]
++bombard --urlfile file --start 4 --increment 4 --rundir /tmp/ --runs 4 --time 4 --delay 15
+ .PP
+ bombard -h
+ .SH DESCRIPTION
+@@ -30,42 +30,56 @@
+ .SH OPTIONS
+ .TP
+ -d delay
++--delay delay
+ Max random delay in seconds between connections by a simulated user.  See the
+ siege documentation for more details but you can probably just leave this at 
+ the default setting of 15.
+ .TP
+ -f file
++--urlfile file
+ The file listing the URLs to be tested.  See the siege documentation for the 
+ format of this file but basically for GETs its just a list of URLs.  Can be 
+ either absolute or relative to the directory with the siege log.
+ .TP
+ -h
++--help
+ Display usage and then exit.
+ .TP
++-H "Cache-Control: no-cache"
++--header "Cache-Control: no-cache"
++Add a HTTP header to each request. Can ben specified multiple times.
++.TP
+ -i increment
++--increment increment
+ Increment by which the number of simulated users is increased for each run of 
+ siege.
+ .TP
+ -l rundir
++--rundir rundir
+ The directory which will be used to hold the results of the stress test.
+ The default is to read .siegerc for a logfile entry and use the same
+ directory.
+ .TP
+ -r runs
++--runs runs
+ The number of siege runs to do.  Defaults to 10.
+ .TP
+ -s start
++--start start
+ Number of simulated users for first run.
+ .TP
+ -t time
++--time time
+ .TP
+ -v
++--version
+ Display version and then exit
+ Duration of each run (mins).  Defaults to 5.
+ .SH EXAMPLES
+ A basic example using the defaults might look like:
+ .IP
+ bombard -f testpages -s 10 -i 10
++bombard --urlfile testpages --start 10 --increment 10
+ .IP
+ This would pull URLs from the file called testpages running siege 10 times
+ starting with 10 simulated users and building up to 100.
+@@ -73,6 +87,7 @@
+ Another example this time using all of the options might look like:
+ .IP
+ bombard -f testpages -s 10 -i 10 -d 30 -l /tmp -r 20 -t 10
++bombard --urlfile testpages --start 10 --increment 10 --delay 10 --rundir /tmp/ --runs 20 --time 20
+ .IP
+ This is as the previous example except that the delay has been increased to 30
+ seconds, the tests will build up to 200 simulated users, each run will last
