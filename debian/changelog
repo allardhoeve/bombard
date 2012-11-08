@@ -1,3 +1,10 @@
+bombard (1.01-4) unstable; urgency=low
+
+  * Allow long options in siegechart (e.g. --help).
+  * Add --min options that goes with --max.
+
+ -- Allard <allard@byte.nl>  Thu, 08 Nov 2012 17:04:19 +0100
+
 bombard (1.01-3) unstable; urgency=low
 
   * Allow long options (e.g. --help).
