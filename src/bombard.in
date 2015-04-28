@@ -84,15 +84,15 @@ my $date = POSIX::strftime "%y%m%d", localtime;
 mkdir("$date", 0755) unless -d "$date";
 
 my $time = POSIX::strftime "%H%M", localtime;
-open LOG1, $logf;
-open LOG2, ">$date/$time";
+open LOG1, $logf or die "Can't open LOG1: $!";
+open LOG2, ">$date/$time" or die "Can't open LOG2: $!";
 while (<LOG1>) {
 	print LOG2;
 }
 close LOG2;
 
-open INFO, ">$date/$time.info";
-open SITE, $sites;
+open INFO, ">$date/$time.info" or die "Can't open INFO: $!";
+open SITE, $sites or die "Can't open SITE: $!";
 print INFO "Start: $start\tIncrement: $inc\tRuns: $runs\tDelay: $delay\n";
 while (<SITE>) {
 	print INFO;
