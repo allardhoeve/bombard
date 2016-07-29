@@ -1,8 +1,14 @@
-Siege Support Utilities
------------------------
+# Siege Support Utilities
 
-Author: Bill Proud <bill.proud@nl.wanadoo.com>
+Author: <a href="mailto:bill.proud@nl.wanadoo.com">Bill Proud</a>
+
 Partly based on Peter Hutnick's bombardment
+
+## Docker image
+
+Someone thoughtfully created a Docker image that lets you use this script with hardly any configuration (once you have Docker): https://github.com/klokantech/bombard-docker
+
+## Usage
 
 The siege support utilities consist of the following perl scripts all of which
 should be installed in the same directory (such as /usr/local/bin):
@@ -14,11 +20,11 @@ bombard		Drives siege along with the other two scripts above
 Notes:
 
 1. Siegechart requires the following perl modules: Chart-2.x and GD-1.2x
-2. Bombard requires a logfile entry to be set in .siegerc
+1. Bombard requires a logfile entry to be set in .siegerc
 
 There are also the following man pages which can be installed in for example
-/usr/local/man/man1:
+`/usr/local/man/man1`:
 
-siegechart.1
-bombard.1
+* `siegechart.1`
+* `bombard.1`
 
