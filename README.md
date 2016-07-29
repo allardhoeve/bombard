@@ -20,11 +20,10 @@ bombard		Drives siege along with the other two scripts above
 Notes:
 
 1. Siegechart requires the following perl modules: Chart-2.x and GD-1.2x
-1. Bombard requires a logfile entry to be set in .siegerc
+1. Bombard requires a logfile entry and `logging = true` to be set in .siegerc
 
 There are also the following man pages which can be installed in for example
 `/usr/local/man/man1`:
 
 * `siegechart.1`
 * `bombard.1`
-
