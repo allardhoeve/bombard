@@ -27,3 +27,13 @@ There are also the following man pages which can be installed in for example
 
 * `siegechart.1`
 * `bombard.1`
+
+
+## Compiling
+
+1. `apt-get install libgd-dev siege cpan` / `brew install cpan siege libgd`
+1. `cpan install GD`
+2. `cpan install Chart::Lines`
+4. `./configure`
+5. `make`
+6. optional: `make install`
